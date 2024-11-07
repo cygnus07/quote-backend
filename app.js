@@ -18,6 +18,6 @@ app.get('/get-quote', async (req,res) => {
 const port = process.env.PORT || 7004
 
 app.listen(7004, () => {
-    console.log("Server is listening on port: 7004")
+    console.log(`Server is listening on port: ${port}`)
 })
 
