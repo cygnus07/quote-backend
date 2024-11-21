@@ -1,23 +1,37 @@
-import express from 'express'
-import fetch from 'node-fetch'
-import cors from 'cors'
+import express from 'express';
+import fetch from 'node-fetch';
+import cors from 'cors';
 
-const app = express()
+const app = express();
 
-app.use(cors())
-app.get('/get-quote', async (req,res) => {
+app.use(cors());
+
+// Endpoint to fetch a random quote
+app.get('/get-quote', async (req, res) => {
     try {
-        const response = await fetch("https://zenquotes.io/api/random")
-        const data = await response.json()
-        res.json(data)
+        const response = await fetch("https://zenquotes.io/api/random");
+        const data = await response.json();
+
+        // Ensure data contains the expected structure
+        if (Array.isArray(data) && data.length > 0) {
+            res.json(data);
+        } else {
+            throw new Error("Invalid response structure from ZenQuotes API");
+        }
     } catch (error) {
-        res.status(500).json({ error: "Error fething quote"})
+        console.error("Error fetching quote:", error);
+        res.status(500).json({ error: "Error fetching quote" });
     }
-})
+});
 
-const port = process.env.PORT || 7004
+// Keep-alive endpoint to prevent server from sleeping
+app.get('/ping', (req, res) => {
+    res.status(200).send("Server is alive");
+});
 
-app.listen(7004, () => {
-    console.log(`Server is listening on port: ${port}`)
-})
+const port = process.env.PORT || 7004;
 
+// Start the server
+app.listen(port, () => {
+    console.log(`Server is listening on port: ${port}`);
+});
